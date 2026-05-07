@@ -12,20 +12,31 @@ import java.util.Map;
 public class CredentialIdentifierService {
 
     public IssuerMetadata getIssuerMetadata() {
+        // Wallet expects a map with all SupportedCredentialFormats -> We only have one: the Ips
         Map<String, SupportedCredentialFormat> configs = new HashMap<>();
 
-        SupportedCredentialFormat pid = new SupportedCredentialFormat();
-        pid.setFormat("mso_mdoc");
 
+        //Creating the SupportedCredentialFormat -> Testing one the Wallet knows
+        SupportedCredentialFormat atomicAttribute = new SupportedCredentialFormat();
+        atomicAttribute.setFormat("vc+sd-jwt");
+        atomicAttribute.setVct("AtomicAttribute2023"); //ips.setVct("eu.europa.ec.eudi.ips"); //Todo: in der Wallet eine für den IPS registrieren?
+
+        //Creating the SupportedCredentialFormat -> Testing one the Wallet knows
         SupportedCredentialFormat ips = new SupportedCredentialFormat();
-        ips.setFormat("jwt_vc_json");
+        ips.setFormat("vc+sd-jwt");
+        ips.setVct("ips"); //this is not something the Wallet knows yet!!!!
 
-        configs.put("PID", pid);
+        //Adding the SupportedCredentialFormats to the Map
+        configs.put("AtomicAttribute", atomicAttribute);
+        configs.put("ips", ips);
 
+
+
+        //Creating Issuer Metadata Todo: at the moment everything in there is just mocking (currently trying to get SupportedCredentialConfigurations right)
         IssuerMetadata metadata = new IssuerMetadata();
-        metadata.setCredentialIssuer("https://issuer.example.com");
-        metadata.setAuthorizationServers(List.of("https://issuer.example.com")); //Where we will do the authentififcation, maybe we can use the existing Wallet-Issuer?
-        metadata.setCredentialEndpoint("https://issuer.example.com/credential"); //where we will get the Credential from (this issuer)
+        metadata.setCredentialIssuer("http://10.0.2.2:8080"); //this is us
+        metadata.setAuthorizationServers(List.of("http://10.0.2.2:8080")); // this is currently us, but we want to know if we can use the existing Wallet-Issuer?
+        metadata.setCredentialEndpoint("http://10.0.2.2:8080/credential"); //this is us
         metadata.setSupportedCredentialConfigurations(configs);
 
         return metadata;
@@ -54,9 +65,9 @@ public class CredentialIdentifierService {
         configs.put("PID", pid);
 
         IssuerMetadata metadata = new IssuerMetadata();
-        metadata.setCredentialIssuer("http://10.0.2.2:8080");
-        metadata.setAuthorizationServers(List.of("http://10.0.2.2:8080"));
-        metadata.setCredentialEndpoint("http://10.0.2.2:8080/credential");
+        metadata.setCredentialIssuer("http://10.0.2.2:8080"); //this is our issuer (local Host)
+        metadata.setAuthorizationServers(List.of("http://10.0.2.2:8080")); //this is our issuer (local Host) BUT we want to know of we can the AuthServer the already implemented Credentials use
+        metadata.setCredentialEndpoint("http://10.0.2.2:8080/credential"); //this is our issuer (local Host) ToDo: Endpoint not implemented
         metadata.setSupportedCredentialConfigurations(configs);
 
         return metadata;
