@@ -58,11 +58,11 @@ public class CredentialIdentifierService {
     public IssuerMetadata getIssuerMetadata() {
         Map<String, SupportedCredentialFormat> configs = new HashMap<>();
 
-        SupportedCredentialFormat pid = new SupportedCredentialFormat();
-        pid.setFormat("mso_mdoc");
-        pid.setDocType("eu.europa.ec.eudi.pid.1");
+        SupportedCredentialFormat ips = new SupportedCredentialFormat();
+        ips.setFormat("vc+sd-jwt");
+        ips.setVct("urn:eu.europa.ec.eudi:ips:1"); //Muss genau mit sdJwtType: String in IpsScheme im IpsScheme-Package übereinstimmen!
 
-        configs.put("PID", pid);
+        configs.put("IPS", ips);
 
         IssuerMetadata metadata = new IssuerMetadata();
         metadata.setCredentialIssuer("http://10.0.2.2:8080"); //this is our issuer (local Host)
