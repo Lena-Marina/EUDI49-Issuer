@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @Service
 public class CredentialIdentifierService {
 
@@ -59,10 +60,11 @@ public class CredentialIdentifierService {
         Map<String, SupportedCredentialFormat> configs = new HashMap<>();
 
         SupportedCredentialFormat ips = new SupportedCredentialFormat();
-        ips.setFormat("vc+sd-jwt");
+        ips.setFormat("dc+sd-jwt");
         ips.setVct("urn:eu.europa.ec.eudi:ips:1"); //Muss genau mit sdJwtType: String in IpsScheme im IpsScheme-Package übereinstimmen!
 
-        configs.put("IPS", ips);
+
+        configs.put("urn:eu.europa.ec.eudi:ips:1", ips);
 
         IssuerMetadata metadata = new IssuerMetadata();
         metadata.setCredentialIssuer("http://10.0.2.2:8080"); //this is our issuer (local Host)
