@@ -66,7 +66,7 @@ public class PatientSummaryController {
     }
 
     // creates sd-jwt from summary, uses patient id
-    @GetMapping(value = "/Patient/{id}/sdjwt" )
+    /*@GetMapping(value = "/Patient/{id}/sdjwt" )
     public String getPatientSdJwt(@PathVariable String id) throws Exception {
         IGenericClient client = fhirContext.newRestfulGenericClient("https://hapi.fhir.org/baseR4");
         IBaseResource result = client.operation()
@@ -81,6 +81,24 @@ public class PatientSummaryController {
 
         return jwtService.createSdJwt(id, fhirJson);
 
+    }*/
+
+    @GetMapping(value = "/Patient/{id}/sdjwt")
+    public String getPatientSdJwt(@PathVariable String id) throws Exception {
+        IGenericClient client = fhirContext.newRestfulGenericClient("https://hapi.fhir.org/baseR4");
+
+        Bundle bundle = client.operation()
+                .onInstance(new IdType("Patient", id))
+                .named("$summary")
+                .withNoParameters(Parameters.class)
+                .useHttpGet()
+                .returnResourceType(Bundle.class)  // ← das war das Problem
+                .execute();
+
+        String fhirJson = fhirContext.newJsonParser()
+                .encodeResourceToString(bundle);
+
+        return jwtService.createSdJwt(id, fhirJson);
     }
 
     // ONLY FOR TEST ENVIRONMENTS
