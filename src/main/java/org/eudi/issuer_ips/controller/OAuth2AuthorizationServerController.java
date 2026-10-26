@@ -26,6 +26,7 @@ public class OAuth2AuthorizationServerController {
      * - where to send the user for login (/authorize)
      * - where to exchange the authorization code for a token (/token)
      * - which OAuth2 flows are supported
+     * - that PKCE with S256 is supported
      */
 
     @CrossOrigin
@@ -37,6 +38,7 @@ public class OAuth2AuthorizationServerController {
         metadata.setTokenEndpoint("http://10.0.2.2:8080/token");
         metadata.setResponseTypesSupported(List.of("code"));
         metadata.setGrantTypesSupported(List.of("authorization_code"));
+        metadata.setCodeChallengeMethodsSupported(List.of("S256"));
         return metadata;
     }
 }

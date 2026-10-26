@@ -28,6 +28,10 @@ public class OAuth2AuthorizationServerMetadata {
     @JsonProperty("grant_types_supported")
     public List<String> grantTypesSupported;
 
+    // PKCE: VC-K sends code_challenge_method=S256
+    @JsonProperty("code_challenge_methods_supported")
+    public List<String> codeChallengeMethodsSupported;
+
     // Getters and Setters
     public String getIssuer() { return issuer; }
     public void setIssuer(String issuer) { this.issuer = issuer; }
@@ -43,4 +47,7 @@ public class OAuth2AuthorizationServerMetadata {
 
     public List<String> getGrantTypesSupported() { return grantTypesSupported; }
     public void setGrantTypesSupported(List<String> grantTypesSupported) { this.grantTypesSupported = grantTypesSupported; }
+
+    public List<String> getCodeChallengeMethodsSupported() { return codeChallengeMethodsSupported; }
+    public void setCodeChallengeMethodsSupported(List<String> codeChallengeMethodsSupported) { this.codeChallengeMethodsSupported = codeChallengeMethodsSupported; }
 }

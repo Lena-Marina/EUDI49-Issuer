@@ -44,6 +44,7 @@ public class CredentialIdentifierService {
 }*/
 package org.eudi.issuer_ips.service;
 
+import org.eudi.issuer_ips.model.CredentialRequestProofSupported;
 import org.eudi.issuer_ips.model.IssuerMetadata;
 import org.eudi.issuer_ips.model.SupportedCredentialFormat;
 import org.springframework.stereotype.Service;
@@ -62,14 +63,19 @@ public class CredentialIdentifierService {
         SupportedCredentialFormat ips = new SupportedCredentialFormat();
         ips.setFormat("dc+sd-jwt");
         ips.setVct("urn:eu.europa.ec.eudi:ips:1"); //Muss genau mit sdJwtType: String in IpsScheme im IpsScheme-Package übereinstimmen!
+        ips.setCryptographicBindingMethodsSupported(List.of("jwk"));
+        ips.setCredentialSigningAlgValuesSupported(List.of("ES256"));
 
+        CredentialRequestProofSupported jwtProof = new CredentialRequestProofSupported();
+        jwtProof.setProofSigningAlgValuesSupported(List.of("ES256"));
+        ips.setProofTypesSupported(Map.of("jwt", jwtProof));
 
         configs.put("urn:eu.europa.ec.eudi:ips:1", ips);
 
         IssuerMetadata metadata = new IssuerMetadata();
         metadata.setCredentialIssuer("http://10.0.2.2:8080"); //this is our issuer (local Host)
-        metadata.setAuthorizationServers(List.of("http://10.0.2.2:8080")); //this is our issuer (local Host) BUT we want to know of we can the AuthServer the already implemented Credentials use
-        metadata.setCredentialEndpoint("http://10.0.2.2:8080/credential"); //this is our issuer (local Host) ToDo: Endpoint not implemented
+        metadata.setAuthorizationServers(List.of("http://10.0.2.2:8080")); //our Authorization Server
+        metadata.setCredentialEndpoint("http://10.0.2.2:8080/credential"); //ToDo: Endpoint not implemented
         metadata.setSupportedCredentialConfigurations(configs);
 
         return metadata;
