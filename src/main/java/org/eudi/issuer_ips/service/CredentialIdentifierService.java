@@ -83,7 +83,7 @@ public class CredentialIdentifierService {
         // credential_issuer must be identical to iss in the SD-JWT (JwtService): both from issuer.base-url
         metadata.setCredentialIssuer(issuerUrls.credentialIssuer());
         metadata.setAuthorizationServers(List.of(issuerUrls.credentialIssuer())); //our Authorization Server
-        metadata.setCredentialEndpoint(issuerUrls.credentialEndpoint()); //ToDo: Endpoint not implemented
+        metadata.setCredentialEndpoint(issuerUrls.credentialEndpoint());
         metadata.setSupportedCredentialConfigurations(configs);
 
         return metadata;

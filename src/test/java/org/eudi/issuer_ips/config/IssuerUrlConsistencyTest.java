@@ -38,7 +38,7 @@ class IssuerUrlConsistencyTest {
 
     @Test
     void issEqualsCredentialIssuer() throws Exception {
-        String sdJwt = jwtService.createSdJwt("p1", BUNDLE);
+        String sdJwt = jwtService.createSdJwt(BUNDLE, null);
         String iss = SignedJWT.parse(sdJwt.substring(0, sdJwt.indexOf('~'))).getJWTClaimsSet().getIssuer();
 
         IssuerMetadata metadata = credentialIdentifierService.getIssuerMetadata();

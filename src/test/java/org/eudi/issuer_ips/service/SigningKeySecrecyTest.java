@@ -31,7 +31,7 @@ class SigningKeySecrecyTest {
 
         SigningKeyProvider provider = new SigningKeyProvider(key);
         JwtService jwtService = new JwtService(provider, new IssuerUrlProperties("http://issuer.test"));
-        String sdJwt = jwtService.createSdJwt("p1", JwtServiceEs256Test.BUNDLE);
+        String sdJwt = jwtService.createSdJwt(JwtServiceEs256Test.BUNDLE, null);
 
         assertFalse(output.getAll().contains(d), "privater Schlüssel (d) im Log");
         assertFalse(sdJwt.contains(d), "privater Schlüssel (d) im SD-JWT");

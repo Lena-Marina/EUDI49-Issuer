@@ -42,7 +42,7 @@ class JwtServiceEs256Test {
 
     /** Issuer-signed JWT = part before the first "~". */
     private SignedJWT issuerJwt() throws Exception {
-        String sdJwt = jwtService.createSdJwt("p1", BUNDLE);
+        String sdJwt = jwtService.createSdJwt(BUNDLE, null);
         return SignedJWT.parse(sdJwt.substring(0, sdJwt.indexOf('~')));
     }
 
@@ -71,7 +71,7 @@ class JwtServiceEs256Test {
 
     @Test
     void sdJwtEndsWithDisclosuresSeparatedByTilde() throws Exception {
-        String sdJwt = jwtService.createSdJwt("p1", BUNDLE);
+        String sdJwt = jwtService.createSdJwt(BUNDLE, null);
         // 2 resource types -> 2 disclosures (abschließendes "~" folgt erst mit US15)
         assertEquals(2, sdJwt.chars().filter(c -> c == '~').count());
     }
@@ -95,7 +95,8 @@ class JwtServiceEs256Test {
         SignedJWT original = issuerJwt();
         Base64URL[] parts = original.getParsedParts();
 
-        String payload = parts[1].decodeToString().replace("\"p1\"", "\"someone-else\"");
+        // change iss (the SD-JWT has no sub)
+        String payload = parts[1].decodeToString().replace(ISSUER, "http://attacker.test:8080");
         assertNotEquals(parts[1].decodeToString(), payload, "Payload wurde nicht verändert");
 
         SignedJWT tampered = SignedJWT.parse(parts[0] + "."
