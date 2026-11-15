@@ -44,6 +44,7 @@ public class CredentialIdentifierService {
 }*/
 package org.eudi.issuer_ips.service;
 
+import org.eudi.issuer_ips.config.IssuerUrlProperties;
 import org.eudi.issuer_ips.model.CredentialRequestProofSupported;
 import org.eudi.issuer_ips.model.IssuerMetadata;
 import org.eudi.issuer_ips.model.SupportedCredentialFormat;
@@ -56,6 +57,12 @@ import java.util.Map;
 
 @Service
 public class CredentialIdentifierService {
+
+    private final IssuerUrlProperties issuerUrls;
+
+    public CredentialIdentifierService(IssuerUrlProperties issuerUrls) {
+        this.issuerUrls = issuerUrls;
+    }
 
     public IssuerMetadata getIssuerMetadata() {
         Map<String, SupportedCredentialFormat> configs = new HashMap<>();
@@ -73,9 +80,10 @@ public class CredentialIdentifierService {
         configs.put("urn:eu.europa.ec.eudi:ips:1", ips);
 
         IssuerMetadata metadata = new IssuerMetadata();
-        metadata.setCredentialIssuer("http://10.0.2.2:8080"); //this is our issuer (local Host)
-        metadata.setAuthorizationServers(List.of("http://10.0.2.2:8080")); //our Authorization Server
-        metadata.setCredentialEndpoint("http://10.0.2.2:8080/credential"); //ToDo: Endpoint not implemented
+        // credential_issuer must be identical to iss in the SD-JWT (JwtService): both from issuer.base-url
+        metadata.setCredentialIssuer(issuerUrls.credentialIssuer());
+        metadata.setAuthorizationServers(List.of(issuerUrls.credentialIssuer())); //our Authorization Server
+        metadata.setCredentialEndpoint(issuerUrls.credentialEndpoint()); //ToDo: Endpoint not implemented
         metadata.setSupportedCredentialConfigurations(configs);
 
         return metadata;

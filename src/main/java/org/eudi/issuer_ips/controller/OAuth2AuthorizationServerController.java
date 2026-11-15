@@ -1,5 +1,6 @@
 package org.eudi.issuer_ips.controller;
 
+import org.eudi.issuer_ips.config.IssuerUrlProperties;
 import org.eudi.issuer_ips.model.OAuth2AuthorizationServerMetadata;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,12 @@ import java.util.List;
 @RequestMapping("/.well-known/")
 public class OAuth2AuthorizationServerController {
 
+    private final IssuerUrlProperties issuerUrls;
+
+    public OAuth2AuthorizationServerController(IssuerUrlProperties issuerUrls) {
+        this.issuerUrls = issuerUrls;
+    }
+
     /**
      * Returns the OAuth2 Authorization Server Metadata as JSON.
      * This tells the Wallet:
@@ -33,9 +40,9 @@ public class OAuth2AuthorizationServerController {
     @GetMapping(value = "/oauth-authorization-server", produces = "application/json")
     public OAuth2AuthorizationServerMetadata getAuthorizationServerMetadata() {
         OAuth2AuthorizationServerMetadata metadata = new OAuth2AuthorizationServerMetadata();
-        metadata.setIssuer("http://10.0.2.2:8080");
-        metadata.setAuthorizationEndpoint("http://10.0.2.2:8080/authorize");
-        metadata.setTokenEndpoint("http://10.0.2.2:8080/token");
+        metadata.setIssuer(issuerUrls.credentialIssuer());
+        metadata.setAuthorizationEndpoint(issuerUrls.authorizationEndpoint());
+        metadata.setTokenEndpoint(issuerUrls.tokenEndpoint());
         metadata.setResponseTypesSupported(List.of("code"));
         metadata.setGrantTypesSupported(List.of("authorization_code"));
         metadata.setCodeChallengeMethodsSupported(List.of("S256"));
