@@ -1,2 +1,6 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+# FHIR test bundles: always LF, also on Windows checkouts.
+# Byte size and SHA-256 in the READMEs refer to the LF version.
+src/test/resources/testdata/** text eol=lf
