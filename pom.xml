@@ -42,6 +42,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!--MockMvc with full Spring context (@AutoConfigureMockMvc), Spring Boot 4-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!--Dependency to use as RESTful Server-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

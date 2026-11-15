@@ -2,9 +2,11 @@ package org.eudi.issuer_ips.service;
 
 import org.eudi.issuer_ips.model.IssuedAuthorizationCode;
 import org.eudi.issuer_ips.model.PendingAuthorizationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
@@ -23,9 +25,21 @@ public class AuthorizationCodeService {
     public static final Duration LOGIN_REQUEST_TTL = Duration.ofMinutes(10);
     public static final Duration CODE_TTL = Duration.ofMinutes(5);
 
+    private final Clock clock;
     private final SecureRandom secureRandom = new SecureRandom();
     private final ConcurrentHashMap<String, PendingAuthorizationRequest> pendingRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, IssuedAuthorizationCode> codes = new ConcurrentHashMap<>();
+
+    /** Used by Spring; the Clock comes from ClockConfig (replaceable in tests). */
+    @Autowired
+    public AuthorizationCodeService(Clock clock) {
+        this.clock = clock;
+    }
+
+    /** System clock (kept for existing tests without Spring context). */
+    public AuthorizationCodeService() {
+        this(Clock.systemUTC());
+    }
 
     /**
      * Saves a verified /authorize request.
@@ -41,7 +55,7 @@ public class AuthorizationCodeService {
         String requestId = randomToken();
         pendingRequests.put(requestId, new PendingAuthorizationRequest(
                 clientId, redirectUri, state, codeChallenge, codeChallengeMethod, authorizationDetails,
-                Instant.now().plus(LOGIN_REQUEST_TTL)));
+                clock.instant().plus(LOGIN_REQUEST_TTL)));
         return requestId;
     }
 
@@ -56,7 +70,7 @@ public class AuthorizationCodeService {
         if (request == null) {
             return Optional.empty();
         }
-        if (request.isExpiredAt(Instant.now())) {
+        if (request.isExpiredAt(clock.instant())) {
             pendingRequests.remove(requestId, request);
             return Optional.empty();
         }
@@ -72,7 +86,7 @@ public class AuthorizationCodeService {
             return Optional.empty();
         }
         PendingAuthorizationRequest request = pendingRequests.remove(requestId);
-        if (request == null || request.isExpiredAt(Instant.now())) {
+        if (request == null || request.isExpiredAt(clock.instant())) {
             return Optional.empty();
         }
         purgeExpired();
@@ -84,7 +98,7 @@ public class AuthorizationCodeService {
                 request.codeChallenge(),
                 request.codeChallengeMethod(),
                 request.authorizationDetails(),
-                Instant.now().plus(CODE_TTL)));
+                clock.instant().plus(CODE_TTL)));
         return Optional.of(code);
     }
 
@@ -97,14 +111,14 @@ public class AuthorizationCodeService {
             return Optional.empty();
         }
         IssuedAuthorizationCode issued = codes.remove(code);
-        if (issued == null || issued.isExpiredAt(Instant.now())) {
+        if (issued == null || issued.isExpiredAt(clock.instant())) {
             return Optional.empty();
         }
         return Optional.of(issued);
     }
 
     private void purgeExpired() {
-        Instant now = Instant.now();
+        Instant now = clock.instant();
         pendingRequests.values().removeIf(r -> r.isExpiredAt(now));
         codes.values().removeIf(c -> c.isExpiredAt(now));
     }
