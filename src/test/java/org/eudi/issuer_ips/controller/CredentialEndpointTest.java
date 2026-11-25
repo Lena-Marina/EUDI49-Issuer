@@ -379,6 +379,32 @@ class CredentialEndpointTest {
         assertFalse(text.contains("disclosure"));
     }
 
+    // ---- SD-JWT VC payload via /credential ----------------------------------
+
+    /** cnf.jwk of the issued credential is exactly the public key from the proof header. */
+    @Test
+    void issuedCredentialIsBoundToTheProofKey() throws Exception {
+        ECKey holder = ProofJwts.newKey();
+        String sdJwt = credentialOf(postValid("user-anna", holder));
+
+        Map<String, Object> cnf = SignedJWT.parse(sdJwt.substring(0, sdJwt.indexOf('~')))
+                .getJWTClaimsSet().getJSONObjectClaim("cnf");
+        assertEquals(Map.of("jwk", holder.toPublicJWK().toJSONObject()), cnf);
+    }
+
+    /** vct, iat/exp with issuer.credential.validity=P30D from application.properties, trailing "~". */
+    @Test
+    void issuedCredentialHasVctValidityAndTrailingTilde() throws Exception {
+        String sdJwt = credentialOf(postValid("user-anna", ProofJwts.newKey()));
+        var claims = SignedJWT.parse(sdJwt.substring(0, sdJwt.indexOf('~'))).getJWTClaimsSet();
+
+        assertEquals("urn:eu.europa.ec.eudi:ips:1", claims.getStringClaim("vct"));
+        assertEquals(START, claims.getIssueTime().toInstant());
+        assertEquals(START.plus(Duration.ofDays(30)), claims.getExpirationTime().toInstant());
+        assertTrue(sdJwt.endsWith("~"), "abschließendes ~ fehlt");
+        assertFalse(sdJwt.endsWith("~~"));
+    }
+
     // ---- whole flow ---------------------------------------------------------------
 
     /** /authorize (login anna/geheim1) -> /token -> /credential, like Valera does it. */

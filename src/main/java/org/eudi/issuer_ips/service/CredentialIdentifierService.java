@@ -46,6 +46,7 @@ package org.eudi.issuer_ips.service;
 
 import org.eudi.issuer_ips.config.IssuerUrlProperties;
 import org.eudi.issuer_ips.model.CredentialRequestProofSupported;
+import org.eudi.issuer_ips.model.IpsCredentialType;
 import org.eudi.issuer_ips.model.IssuerMetadata;
 import org.eudi.issuer_ips.model.SupportedCredentialFormat;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class CredentialIdentifierService {
 
         SupportedCredentialFormat ips = new SupportedCredentialFormat();
         ips.setFormat("dc+sd-jwt");
-        ips.setVct("urn:eu.europa.ec.eudi:ips:1"); //Muss genau mit sdJwtType: String in IpsScheme im IpsScheme-Package übereinstimmen!
+        ips.setVct(IpsCredentialType.VCT); // same constant as vct in the SD-JWT (JwtService); must match sdJwtType in IpsScheme
         ips.setCryptographicBindingMethodsSupported(List.of("jwk"));
         ips.setCredentialSigningAlgValuesSupported(List.of("ES256"));
 

@@ -72,8 +72,9 @@ class JwtServiceEs256Test {
     @Test
     void sdJwtEndsWithDisclosuresSeparatedByTilde() throws Exception {
         String sdJwt = jwtService.createSdJwt(BUNDLE, null);
-        // 2 resource types -> 2 disclosures (abschließendes "~" folgt erst mit US15)
-        assertEquals(2, sdJwt.chars().filter(c -> c == '~').count());
+        // 2 resource types -> 2 disclosures, plus the trailing "~"
+        assertEquals(3, sdJwt.chars().filter(c -> c == '~').count());
+        assertTrue(sdJwt.endsWith("~"));
     }
 
     // ---- AK 2: signature ---------------------------------------------------
